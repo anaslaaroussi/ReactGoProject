@@ -1,14 +1,11 @@
 package main
 
-// import  ("go.mongodb.org/mongo-driver/mongo" "fmt")
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
-
-	// "log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,14 +14,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var client *mongo.Client
+
 type User struct {
-	// ID     *primitive.ObjectID `json:"ID" bson:"_id,omitempty"`
+	ID     *primitive.ObjectID `json:"ID" bson:"_id,omitempty"`
 	Name   string
 	Email  string
 	Avatar string
 }
-
-var client *mongo.Client
 
 func CreateUser(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("content-type", "application/json")
@@ -40,11 +37,12 @@ func CreateUser(response http.ResponseWriter, request *http.Request) {
 
 func GetUserById(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("content-type", "application/json")
-	// fmt.Println(request.URL.Query()["id"]
+	fmt.Println(request.URL.Query()["id"])
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	var user User
 	id := request.URL.Query()["id"]
-	objID, _ := primitive.ObjectIDFromHex(id)
+	fmt.Println(id[0])
+	objID, _ := primitive.ObjectIDFromHex(id[0])
 	filter := bson.M{"_id": objID}
 	fmt.Println(objID)
 	userCollection := client.Database("users").Collection("profils")
@@ -56,6 +54,29 @@ func GetUserById(response http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(response).Encode(user)
 }
 
+func UpdateUserById(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("content-type", "application/json")
+	var user User
+	json.NewDecoder(request.Body).Decode(&user)
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	id := request.URL.Query()["id"]
+	objID, _ := primitive.ObjectIDFromHex(id[0])
+	filter := bson.M{"_id": objID}
+
+	userCollection := client.Database("users").Collection("profils")
+	update := bson.D{
+
+		{"$set", bson.D{{"avatar", user.Avatar}}},
+		{"$set", bson.D{{"name", user.Name}}},
+		{"$set", bson.D{{"email", user.Email}}},
+	}
+	updateResult, err := userCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		fmt.Println(err)
+	}
+	json.NewEncoder(response).Encode(updateResult)
+}
+
 func main() {
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, _ = mongo.Connect(context.TODO(), clientOptions)
@@ -63,6 +84,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/user", GetUserById).Methods("GET")
 	router.HandleFunc("/user", CreateUser).Methods("POST")
+	router.HandleFunc("/user", UpdateUserById).Methods("PUT")
+
 	http.ListenAndServe(":8888", router)
 
 }
