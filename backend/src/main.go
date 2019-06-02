@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -33,6 +34,44 @@ func CreateUser(response http.ResponseWriter, request *http.Request) {
 	result, _ := userCollection.InsertOne(ctx, user)
 	json.NewEncoder(response).Encode(result)
 
+}
+
+func GetUsers(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("content-type", "application/json")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	var users []*User
+	userCollection := client.Database("users").Collection("profils")
+
+	cur, err := userCollection.Find(ctx, bson.D{})
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{"message"}` + err.Error() + `"}`))
+		return
+	}
+	fmt.Println(cur)
+	defer cur.Close(ctx)
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+	for cur.Next(ctx) {
+
+		// create a value into which the single document can be decoded
+		var user User
+		err := cur.Decode(&user)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		users = append(users, &user)
+	}
+
+	if err := cur.Err(); err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{"message"}` + err.Error() + `"}`))
+		return
+	}
+
+	fmt.Println(cur)
+	json.NewEncoder(response).Encode(users)
 }
 
 func GetUserById(response http.ResponseWriter, request *http.Request) {
@@ -85,6 +124,7 @@ func main() {
 	router.HandleFunc("/user", GetUserById).Methods("GET")
 	router.HandleFunc("/user", CreateUser).Methods("POST")
 	router.HandleFunc("/user", UpdateUserById).Methods("PUT")
+	router.HandleFunc("/user/all", GetUsers).Methods("GET")
 
 	http.ListenAndServe(":8888", router)
 
