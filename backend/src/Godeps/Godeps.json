@@ -1,0 +1,19 @@
+{
+  "ImportPath": "go-demo",
+  "GoVersion": "go1.6",
+  "Deps": [
+    "github.com/gorilla/handlers",
+    "github.com/gorilla/mux",
+    "go.mongodb.org/mongo-driver/bson",
+    "go.mongodb.org/mongo-driver/bson/primitive",
+    "go.mongodb.org/mongo-driver/mongo",
+    "go.mongodb.org/mongo-driver/mongo/options",
+    "context",
+    "encoding/json",
+    "fmt",
+    "log",
+    "net/http",
+    "os",
+    "time"
+  ]
+}

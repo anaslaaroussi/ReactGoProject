@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -119,7 +120,8 @@ func UpdateUserById(response http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	mongoUrl := "mongodb://mongo:mongo12@ds263856.mlab.com:63856/users"
+	clientOptions := options.Client().ApplyURI(mongoUrl)
 	client, _ = mongo.Connect(context.TODO(), clientOptions)
 
 	router := mux.NewRouter()
@@ -135,6 +137,11 @@ func main() {
 
 	handler := handlers.CORS(headers, methods, origins)(router)
 
-	http.ListenAndServe(":8888", handler)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8888"
+	}
+
+	http.ListenAndServe(":"+port, handler)
 
 }
