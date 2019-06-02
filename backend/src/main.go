@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -38,6 +39,7 @@ func CreateUser(response http.ResponseWriter, request *http.Request) {
 
 func GetUsers(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("content-type", "application/json")
+
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	var users []*User
 	userCollection := client.Database("users").Collection("profils")
@@ -121,11 +123,18 @@ func main() {
 	client, _ = mongo.Connect(context.TODO(), clientOptions)
 
 	router := mux.NewRouter()
+
 	router.HandleFunc("/user", GetUserById).Methods("GET")
 	router.HandleFunc("/user", CreateUser).Methods("POST")
 	router.HandleFunc("/user", UpdateUserById).Methods("PUT")
 	router.HandleFunc("/user/all", GetUsers).Methods("GET")
 
-	http.ListenAndServe(":8888", router)
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"*"})
+
+	handler := handlers.CORS(headers, methods, origins)(router)
+
+	http.ListenAndServe(":8888", handler)
 
 }
