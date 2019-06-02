@@ -10,6 +10,7 @@ const styles = {
   }
 };
 
-export const Header = () => {
-  return <header style={styles.header}>Home</header>;
+export const Header = ({ edit }) => {
+  const title = edit ? "Edit" : "Home";
+  return <header style={styles.header}>{title}</header>;
 };

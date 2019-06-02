@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+}
+
+.editCard {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+
+  min-height: calc(100vh - 70px);
+  padding-top: 60px;
+}
+
+label {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.input {
+  display: block;
+  margin: 5px;
+  height: 34px;
+  width: 279px;
+  /* border-radius: 5px; */
+  padding: 0 20px;
+  color: rgba(0, 0, 0, 0.8);
+}
+.avatarContainer {
+  position: relative;
+  height: 75px;
+  width: 75px;
+  background-color: darkgray;
+  border-radius: 50%;
+  margin-bottom: 26px;
+}
+
+.avP {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  margin: auto;
+  height: 75px;
+  width: 75px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.inputFile {
+  height: inherit;
+  width: inherit;
+  opacity: 0;
+  padding: 0;
+}
+
+.submitButton {
+  height: 34px;
+  width: 279px;
+  color: #fff;
+  background-color: rgb(75, 66, 66);
+  border: none;
+  margin-top: 15px;
+  border-radius: 5px;
+}
+
+.submitButton:hover {
+  background-color: rgba(75, 66, 66, 0.8);
+}
+
+.submitButton:active {
+  background-color: rgba(75, 66, 66, 0.8);
+  color: rgba(255, 255, 255, 0.5);
+}
