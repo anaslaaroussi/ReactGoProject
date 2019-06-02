@@ -1,7 +1,8 @@
-// export const CardList = ({users}) => {
+import React from "react";
+import { Card } from "./Card/Card";
 
-//     users.map((user)=> {
-
-//     })
-
-// }
+export const CardList = ({ users }) => {
+  return users.map((user, id) => {
+    return <Card key={id} user={user} />;
+  });
+};
