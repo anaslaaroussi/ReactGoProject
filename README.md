@@ -1,4 +1,44 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
+
+this project illustrates the offline synchronization between frontend and backend using PWA (Progressive Web App). this projet is build with:
+
+        - GO Language : for the backend
+        - React : for the frontend
+        - MongoDb : for database
+        - Heroku : for deploying
+        - Mlab : for deploying mongoDb database
+
+The user could display several profils of users(name,mail,avatar) and edit the profils even if offline. The project should be open in a window , as soon as the user is online , the backend will be synchronized with the frontend
+
+## backend
+
+The backend is deployed in heroku , please check the : <a href="https://afternoon-dusk-12420.herokuapp.com">Link<a/>
+
+### User Schema
+
+{avatar : String , name:String , email : String }
+
+The avatar here is a Strin , the picture file is in base64 to facilitate the integration with mongoDb database
+
+### /user - Method:POST
+
+To add new users
+
+### /user?id=ID - Method:GET
+
+To get user by ID
+
+### /user?id=ID - Method:PUT
+
+To Update a user by ID
+
+### /user/all - Method:GET
+
+get all the users in the database
+
+## Front end
+
+Please clone the front end project and launch the dev project.
 
 ## Available Scripts
 
