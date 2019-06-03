@@ -38,7 +38,7 @@ get all the users in the database
 
 ## Front end
 
-Please clone the front end project and launch the dev project.
+Please check the <a href="https://glacial-reaches-61165.herokuapp.com/">link</a>.
 
 ## Available Scripts
 

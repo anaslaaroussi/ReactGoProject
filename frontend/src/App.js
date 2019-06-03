@@ -30,7 +30,6 @@ class App extends Component {
   };
 
   editProfil = id => {
-    navigator.serviceWorker.controller.postMessage("rrr");
     const { users } = this.state;
     console.log(users);
     console.log(id);
