@@ -15,6 +15,15 @@ class EditCard extends Component {
     };
   }
 
+  componentDidMount() {
+    window.addEventListener("online", function() {
+      console.log("online");
+    });
+    window.addEventListener("offline", function() {
+      console.log("offline");
+    });
+  }
+
   getBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -24,15 +33,33 @@ class EditCard extends Component {
     });
   }
 
-  editSend = e => {
+  savePutRequests(url, payload) {
+    const { puts, storePut } = this.props;
+
+    storePut({ url: url, payload: payload, method: "PUT" });
+    sessionStorage.setItem("puts", JSON.stringify(puts));
+    console.log(JSON.parse(sessionStorage.getItem("puts")));
+  }
+
+  editSend = async e => {
     const { ID } = this.state;
     const { returnToHome, updateArrayUser } = this.props;
     e.preventDefault();
     console.log(this.state);
-    axios.put(`${baseUrl}?id=${ID}`, this.state).then(() => {
-      updateArrayUser(this.state);
-      returnToHome();
-    });
+
+    // localStorage.setItem("form_data", this.state);
+    axios
+      .put(`${baseUrl}?id=${ID}`, this.state)
+      .then(() => {
+        console.log(this.state);
+        updateArrayUser(this.state);
+        returnToHome();
+      })
+      .catch(e => {
+        this.savePutRequests(`${baseUrl}?id=${ID}`, this.state);
+        updateArrayUser(this.state);
+        returnToHome();
+      });
   };
 
   handleChange = async event => {

@@ -12,7 +12,15 @@ class App extends Component {
   state = {
     users: [],
     edit: false,
-    curr: null
+    curr: null,
+    our_db: null,
+    putStore: []
+  };
+
+  storePut = put => {
+    let putStore = this.state.putStore;
+    putStore.push(put);
+    this.setState({ putStore });
   };
 
   getUsers = () => {
@@ -22,6 +30,7 @@ class App extends Component {
   };
 
   editProfil = id => {
+    navigator.serviceWorker.controller.postMessage("rrr");
     const { users } = this.state;
     console.log(users);
     console.log(id);
@@ -49,11 +58,38 @@ class App extends Component {
     this.setState({ users: tmpUsers });
   };
 
+  openDatabase() {
+    var db = new Promise((resolve, reject) => {
+      var indexedDBOpenRequest = indexedDB.open("form", 3);
+      indexedDBOpenRequest.onerror = function(error) {
+        // error creating db
+        console.error("IndexedDB error:", error);
+      };
+      indexedDBOpenRequest.onupgradeneeded = function() {
+        // This should only executes if there's a need to
+        // create/update db.
+        this.result.createObjectStore("post_requests", {
+          autoIncrement: true,
+          keyPath: "id"
+        });
+      };
+
+      // This will execute each time the database is opened.
+      indexedDBOpenRequest.onsuccess = function(e) {
+        console.log(this.result);
+        resolve(e.target.result);
+      };
+    });
+    db.then(res => {
+      this.setState({ our_db: res });
+    });
+  }
   componentDidMount = () => {
+    this.openDatabase();
     this.getUsers();
   };
   render() {
-    const { users, edit, curr } = this.state;
+    const { users, edit, curr, putStore } = this.state;
     return (
       <div>
         <Header edit={edit} />
@@ -65,6 +101,8 @@ class App extends Component {
             selectedUser={curr}
             returnToHome={this.returnToHome}
             updateArrayUser={this.updateArrayUser}
+            storePut={this.storePut}
+            puts={putStore}
           />
         )}
       </div>
